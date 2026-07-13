@@ -115,6 +115,7 @@
     <button class="chip" data-src="기업마당">기업마당</button>
     <button class="chip" data-src="K-Startup">K-Startup</button>
     <button class="chip" data-src="나라장터">나라장터</button>
+    <select id="regionSel" class="chip" title="지역 필터"></select>
     <label class="toggle"><input type="checkbox" id="hideDone" checked> 제외한 공고 숨기기</label>
   </div>
 
@@ -138,6 +139,8 @@
     <div class="controls" style="margin:0 0 12px">
       <button class="chip gtab on" data-g="source">출처별</button>
       <button class="chip gtab" data-g="field">분야별</button>
+      <button class="chip gtab" data-g="industry">업종별</button>
+      <button class="chip gtab" data-g="region">지역별</button>
       <button class="chip gtab" data-g="week">마감 주차별</button>
     </div>
     <div id="groups"></div>
@@ -153,7 +156,7 @@ const today = new Date(); today.setHours(0,0,0,0);
 const iso = d => d.toISOString().slice(0,10);
 const TODAY = iso(new Date(today.getTime() - today.getTimezoneOffset()*60000));
 
-let srcFilter = "전체", query = "", hideDone = true, groupMode = "source";
+let srcFilter = "전체", query = "", hideDone = true, groupMode = "source", regionFilter = "전체";
 let calY = today.getFullYear(), calM = today.getMonth();
 
 function dday(deadline) {
@@ -162,6 +165,7 @@ function dday(deadline) {
 }
 function visible(i) {
   if (srcFilter !== "전체" && i.source !== srcFilter) return false;
+  if (regionFilter !== "전체" && regionOf(i) !== regionFilter) return false;
   if (hideDone && statuses[i.id] === "제외") return false;
   if (query && !(i.title + i.org + i.field + (i.target||"")).toLowerCase().includes(query)) return false;
   const d = dday(i.deadline);
@@ -255,6 +259,44 @@ function normField(i) {
   if (i.source === "나라장터") return "입찰·용역";
   return (i.field || "").trim() || "기타";
 }
+
+// ── 지역 분류 (수집기가 넣은 region 우선, 없으면 공고명/기관명에서 추출) ──
+const REGION_MAP = { "서울특별시":"서울","부산광역시":"부산","대구광역시":"대구","인천광역시":"인천",
+  "광주광역시":"광주","대전광역시":"대전","울산광역시":"울산","세종특별자치시":"세종",
+  "경기도":"경기","강원특별자치도":"강원","강원도":"강원","충청북도":"충북","충청남도":"충남",
+  "전북특별자치도":"전북","전라북도":"전북","전라남도":"전남","경상북도":"경북","경상남도":"경남",
+  "제주특별자치도":"제주","서울":"서울","부산":"부산","대구":"대구","인천":"인천","광주":"광주",
+  "대전":"대전","울산":"울산","세종":"세종","경기":"경기","강원":"강원","충북":"충북","충남":"충남",
+  "전북":"전북","전남":"전남","경북":"경북","경남":"경남","제주":"제주" };
+const REGION_KEYS = Object.keys(REGION_MAP).sort((a, b) => b.length - a.length);
+function regionOf(i) {
+  if (i.region) return i.region;
+  const m = (i.title || "").match(/^\s*[\[(（]([^\])）]{2,20})[\])）]/);
+  if (m) for (const k of REGION_KEYS) if (m[1].includes(k)) return REGION_MAP[k];
+  for (const k of REGION_KEYS) if ((i.org || "").includes(k)) return REGION_MAP[k];
+  return "전국";
+}
+
+// ── 업종 분류 (공고명·분야·대상 키워드 기반) ──
+const INDUSTRIES = [
+  ["🎬 콘텐츠·미디어", ["콘텐츠","영상","방송","미디어","웹툰","게임","음악","공연","크리에이터","1인미디어","숏폼","릴스","유튜브","OTT","촬영","드라마","애니메이션"]],
+  ["🛋 인테리어·건축", ["인테리어","건축","리모델링","시공","가구","조경","건설","공간디자인"]],
+  ["🍽 식품·외식", ["식품","푸드","외식","농식품","요식","베이커리","먹거리","급식","레스토랑","김치","전통주"]],
+  ["💄 패션·뷰티", ["패션","뷰티","화장품","의류","코스메틱","섬유","잡화","주얼리"]],
+  ["🛒 이커머스·유통", ["이커머스","쇼핑몰","유통","판로","수출","무역","구매대행","라이브커머스","홈쇼핑","마켓","온라인 판매","해외판매","역직구","박람회","전시회"]],
+  ["🤖 IT·AI·소프트웨어", ["AI","인공지능","소프트웨어","SW","플랫폼","앱 ","어플리케이션","디지털","데이터","블록체인","ICT","사이버","클라우드","메타버스"]],
+  ["💊 바이오·헬스케어", ["바이오","헬스","의료","제약","건강기능","웰니스","의약"]],
+  ["🏭 제조·하드웨어", ["제조","스마트공장","부품","소재","장비","기계","시제품","금형","공정"]],
+  ["🏝 관광·문화", ["관광","문화","축제","전시","여행","한류","공예"]],
+  ["🎓 교육 서비스", ["교육","이러닝","에듀","강의","연수","아카데미"]],
+  ["🌱 농수산·환경·에너지", ["농업","수산","축산","환경","에너지","탄소","ESG","기후","친환경","해양"]],
+];
+function industryOf(i) {
+  const blob = `${i.title} ${i.field} ${i.target || ""}`;
+  for (const [label, kws] of INDUSTRIES)
+    if (kws.some(k => blob.includes(k))) return label;
+  return "🧩 공통·기타";
+}
 function buildGroups(items) {
   const map = new Map();
   const add = (label, order, i) => {
@@ -268,6 +310,12 @@ function buildGroups(items) {
     items.forEach(i => add(meta[i.source][1], meta[i.source][0], i));
   } else if (groupMode === "week") {
     items.forEach(i => { const w = weekInfo(i.deadline); add(w.label, w.idx, i); });
+  } else if (groupMode === "region") {
+    items.forEach(i => add("📍 " + regionOf(i), 0, i));
+    map.forEach(g => g.order = g.label === "📍 전국" ? -1e9 : -g.items.length); // 전국 먼저
+  } else if (groupMode === "industry") {
+    items.forEach(i => add(industryOf(i), 0, i));
+    map.forEach(g => g.order = g.label === "🧩 공통·기타" ? 1e9 : -g.items.length); // 기타 마지막
   } else {
     items.forEach(i => add("📂 " + normField(i), 0, i));
     map.forEach(g => g.order = -g.items.length); // 공고 많은 분야 먼저
@@ -284,6 +332,17 @@ document.querySelectorAll(".gtab").forEach(b => b.onclick = () => {
   b.classList.add("on"); groupMode = b.dataset.g; render();
 });
 document.getElementById("q").oninput = e => { query = e.target.value.trim().toLowerCase(); render(); };
+// 지역 드롭다운: 데이터에 있는 지역만, 공고 수와 함께 표시
+(function initRegionSel() {
+  const counts = {};
+  DATA.items.forEach(i => { const r = regionOf(i); counts[r] = (counts[r] || 0) + 1; });
+  const regions = Object.keys(counts).sort((a, b) =>
+    a === "전국" ? -1 : b === "전국" ? 1 : counts[b] - counts[a]);
+  const sel = document.getElementById("regionSel");
+  sel.innerHTML = `<option value="전체">📍 전체 지역</option>` +
+    regions.map(r => `<option value="${r}">📍 ${r} (${counts[r]})</option>`).join("");
+  sel.onchange = e => { regionFilter = e.target.value; render(); };
+})();
 document.getElementById("hideDone").onchange = e => { hideDone = e.target.checked; render(); };
 document.getElementById("prev").onclick = () => { calM--; if (calM < 0) { calM = 11; calY--; } render(); };
 document.getElementById("next").onclick = () => { calM++; if (calM > 11) { calM = 0; calY++; } render(); };
