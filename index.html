@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>📡 김매실 지원사업 레이더</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #fff; --line: #e5e8ec;
+    --ink: #1c2330; --sub: #6b7686; --accent: #2f6fed;
+    --biz: #2f6fed; --kst: #16a34a; --g2b: #ea850c;
+    --danger: #dc2626; --warn: #d97706;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+         background: var(--bg); color: var(--ink); line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  header h1 { font-size: 24px; }
+  header .meta { color: var(--sub); font-size: 13px; }
+
+  /* 요약 카드 */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 18px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .stat b { font-size: 24px; display: block; }
+  .stat span { color: var(--sub); font-size: 13px; }
+
+  /* 컨트롤 */
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 22px; }
+  .controls input[type=search] { flex: 1; min-width: 220px; padding: 9px 14px; border: 1px solid var(--line);
+    border-radius: 10px; font-size: 14px; background: var(--card); }
+  .chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+    padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--sub); }
+  .chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  label.toggle { font-size: 13px; color: var(--sub); display: flex; gap: 5px; align-items: center; cursor: pointer; }
+
+  /* 섹션 */
+  section { margin-bottom: 34px; }
+  section > h2 { font-size: 17px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  section > h2 .count { font-size: 12px; color: var(--sub); font-weight: 500; }
+
+  /* 캘린더 */
+  .cal { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cal-head b { font-size: 16px; }
+  .cal-head button { border: 1px solid var(--line); background: #fff; border-radius: 8px;
+    padding: 4px 12px; cursor: pointer; font-size: 14px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-grid .dow { text-align: center; font-size: 11px; color: var(--sub); padding: 4px 0; }
+  .cal-cell { min-height: 74px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 5px;
+    font-size: 11px; background: #fcfcfd; cursor: default; overflow: hidden; }
+  .cal-cell.other { opacity: .35; }
+  .cal-cell.today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .cal-cell .d { font-weight: 600; font-size: 11px; color: var(--sub); }
+  .cal-ev { display: block; margin-top: 2px; padding: 1px 5px; border-radius: 5px; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+  .cal-ev.기업마당 { background: var(--biz); } .cal-ev.KStartup { background: var(--kst); }
+  .cal-ev.나라장터 { background: var(--g2b); }
+  .cal-more { color: var(--sub); margin-top: 2px; display: block; }
+  .cal-cell .n { display: none; }
+
+  /* 리스트 */
+  .list { display: grid; gap: 8px; }
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 16px; display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; }
+  .item.done { opacity: .5; }
+  .dday { font-weight: 700; font-size: 15px; text-align: center; }
+  .dday small { display: block; font-weight: 400; font-size: 11px; color: var(--sub); }
+  .dday.hot { color: var(--danger); } .dday.soon { color: var(--warn); }
+  .item .t { font-size: 14px; font-weight: 600; text-decoration: none; color: var(--ink); }
+  .item .t:hover { color: var(--accent); }
+  .item .s { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 999px; color: #fff; margin-right: 6px; }
+  .badge.기업마당 { background: var(--biz); } .badge.KStartup { background: var(--kst); }
+  .badge.나라장터 { background: var(--g2b); }
+  .item select { border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 12px;
+    background: #fff; cursor: pointer; }
+  .item select.st-검토중 { border-color: var(--accent); color: var(--accent); }
+  .item select.st-신청함 { border-color: var(--kst); color: var(--kst); }
+  .empty { color: var(--sub); font-size: 14px; padding: 18px; text-align: center;
+    background: var(--card); border: 1px dashed var(--line); border-radius: 12px; }
+
+  /* 그룹 (분야별/주차별 등) */
+  details.grp { margin-bottom: 6px; }
+  details.grp > summary { cursor: pointer; font-size: 15px; font-weight: 700; padding: 10px 6px;
+    list-style: none; display: flex; align-items: center; gap: 8px; border-radius: 8px; }
+  details.grp > summary::-webkit-details-marker { display: none; }
+  details.grp > summary::before { content: "▸"; color: var(--sub); font-size: 12px; transition: transform .15s; }
+  details.grp[open] > summary::before { transform: rotate(90deg); }
+  details.grp > summary:hover { background: #eef1f5; }
+  details.grp > summary .count { font-size: 12px; color: var(--sub); font-weight: 500; }
+  details.grp .list { margin: 4px 0 16px; }
+  @media (max-width: 640px) {
+    .item { grid-template-columns: 52px 1fr; }
+    .item select { grid-column: 2; justify-self: start; }
+    .cal-cell { min-height: 52px; } .cal-ev { display: none; }
+    .cal-cell .n { display: inline-block; margin-left: 3px; font-size: 10px; color: var(--accent); font-weight: 700; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📡 지원사업 레이더</h1>
+    <span class="meta" id="meta"></span>
+  </header>
+  <div class="meta" id="errors" style="color:var(--danger)"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="공고명·기관·분야 검색…">
+    <button class="chip on" data-src="전체">전체</button>
+    <button class="chip" data-src="기업마당">기업마당</button>
+    <button class="chip" data-src="K-Startup">K-Startup</button>
+    <button class="chip" data-src="나라장터">나라장터</button>
+    <label class="toggle"><input type="checkbox" id="hideDone" checked> 제외한 공고 숨기기</label>
+  </div>
+
+  <section>
+    <h2>📅 마감 캘린더</h2>
+    <div class="cal">
+      <div class="cal-head">
+        <button id="prev">‹</button><b id="calTitle"></b><button id="next">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔥 마감 임박 <span class="count">(7일 이내)</span></h2>
+    <div class="list" id="hotList"></div>
+  </section>
+
+  <section>
+    <h2>📂 전체 공고 <span class="count" id="cAll"></span></h2>
+    <div class="controls" style="margin:0 0 12px">
+      <button class="chip gtab on" data-g="source">출처별</button>
+      <button class="chip gtab" data-g="field">분야별</button>
+      <button class="chip gtab" data-g="week">마감 주차별</button>
+    </div>
+    <div id="groups"></div>
+  </section>
+</div>
+
+<script src="data.js"></script>
+<script>
+const DATA = window.RADAR_DATA || { items: [], collected_at: "-", errors: ["data.js 없음 — collect.py를 먼저 실행하세요"] };
+const STATUS_KEY = "radar-status";
+const statuses = JSON.parse(localStorage.getItem(STATUS_KEY) || "{}");
+const today = new Date(); today.setHours(0,0,0,0);
+const iso = d => d.toISOString().slice(0,10);
+const TODAY = iso(new Date(today.getTime() - today.getTimezoneOffset()*60000));
+
+let srcFilter = "전체", query = "", hideDone = true, groupMode = "source";
+let calY = today.getFullYear(), calM = today.getMonth();
+
+function dday(deadline) {
+  if (!deadline) return null;
+  return Math.round((new Date(deadline) - new Date(TODAY)) / 86400000);
+}
+function visible(i) {
+  if (srcFilter !== "전체" && i.source !== srcFilter) return false;
+  if (hideDone && statuses[i.id] === "제외") return false;
+  if (query && !(i.title + i.org + i.field + (i.target||"")).toLowerCase().includes(query)) return false;
+  const d = dday(i.deadline);
+  return d === null || d >= 0;
+}
+function srcClass(s) { return s.replace("-", ""); }
+
+function itemHTML(i) {
+  const d = dday(i.deadline);
+  const st = statuses[i.id] || "신규";
+  const ddClass = d !== null && d <= 3 ? "hot" : d !== null && d <= 7 ? "soon" : "";
+  const ddText = d === null ? "상시" : d === 0 ? "D-DAY" : "D-" + d;
+  return `<div class="item ${st === "제외" ? "done" : ""}">
+    <div class="dday ${ddClass}">${ddText}<small>${i.deadline || ""}</small></div>
+    <div>
+      <a class="t" href="${i.url}" target="_blank">${i.title}</a>
+      <div class="s"><span class="badge ${srcClass(i.source)}">${i.source}</span>${i.org || ""} · ${i.field || ""}${i.target ? " · " + i.target : ""}</div>
+    </div>
+    <select class="st-${st}" onchange="setStatus('${i.id}', this.value)">
+      ${["신규","검토중","신청함","제외"].map(s => `<option ${s === st ? "selected" : ""}>${s}</option>`).join("")}
+    </select>
+  </div>`;
+}
+function setStatus(id, v) {
+  statuses[id] = v;
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statuses));
+  render();
+}
+
+function renderCalendar(items) {
+  const first = new Date(calY, calM, 1);
+  const start = new Date(first); start.setDate(1 - first.getDay());
+  const byDay = {};
+  items.forEach(i => { if (i.deadline) (byDay[i.deadline] = byDay[i.deadline] || []).push(i); });
+  document.getElementById("calTitle").textContent = `${calY}년 ${calM + 1}월`;
+  let html = ["일","월","화","수","목","금","토"].map(d => `<div class="dow">${d}</div>`).join("");
+  for (let w = 0; w < 6; w++) for (let dd = 0; dd < 7; dd++) {
+    const cur = new Date(start); cur.setDate(start.getDate() + w*7 + dd);
+    const key = iso(new Date(cur.getTime() - cur.getTimezoneOffset()*60000));
+    const evs = byDay[key] || [];
+    const cls = (cur.getMonth() !== calM ? "other " : "") + (key === TODAY ? "today" : "");
+    html += `<div class="cal-cell ${cls}"><span class="d">${cur.getDate()}</span>${evs.length ? `<span class="n">${evs.length}</span>` : ""}`
+      + evs.slice(0,3).map(i => `<a class="cal-ev ${srcClass(i.source)}" href="${i.url}" target="_blank" title="${i.title}">${i.title}</a>`).join("")
+      + (evs.length > 3 ? `<span class="cal-more">+${evs.length - 3}건</span>` : "") + `</div>`;
+  }
+  document.getElementById("calGrid").innerHTML = html;
+}
+
+function render() {
+  const items = DATA.items.filter(visible);
+  document.getElementById("meta").textContent = `마지막 수집: ${DATA.collected_at} · 활성 공고 ${DATA.items.length}건`;
+  document.getElementById("errors").textContent = (DATA.errors || []).join(" / ");
+
+  const hot = items.filter(i => { const d = dday(i.deadline); return d !== null && d <= 7; });
+  const applied = DATA.items.filter(i => statuses[i.id] === "신청함").length;
+  const reviewing = DATA.items.filter(i => statuses[i.id] === "검토중").length;
+  document.getElementById("stats").innerHTML = [
+    [items.length, "표시 중인 공고"], [hot.length, "7일 내 마감"],
+    [reviewing, "검토중"], [applied, "신청함"],
+  ].map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
+
+  renderCalendar(items);
+
+  document.getElementById("hotList").innerHTML =
+    hot.length ? hot.map(itemHTML).join("") : `<div class="empty">해당 공고가 없습니다</div>`;
+
+  const groups = buildGroups(items);
+  document.getElementById("groups").innerHTML = groups.length
+    ? groups.map((g, gi) => `<details class="grp" ${gi < 8 ? "open" : ""}>
+        <summary>${g.label} <span class="count">${g.items.length}건</span></summary>
+        <div class="list">${g.items.map(itemHTML).join("")}</div>
+      </details>`).join("")
+    : `<div class="empty">공고가 없습니다</div>`;
+  document.getElementById("cAll").textContent = `(${items.length}건)`;
+}
+
+// ── 그룹핑 ──
+function weekInfo(deadline) {
+  if (!deadline) return { idx: 9999, label: "🗓 상시·마감 미정" };
+  const weekStart = new Date(TODAY);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // 일요일 시작
+  const idx = Math.floor((new Date(deadline) - weekStart) / (7 * 86400000));
+  const s = new Date(weekStart); s.setDate(weekStart.getDate() + idx * 7);
+  const e = new Date(s); e.setDate(s.getDate() + 6);
+  const fmt = x => `${x.getMonth() + 1}/${x.getDate()}`;
+  const range = `${fmt(s)}–${fmt(e)}`;
+  const name = idx === 0 ? "이번 주" : idx === 1 ? "다음 주" : `${idx}주 후`;
+  return { idx, label: `⏰ ${name} (${range})` };
+}
+function normField(i) {
+  if (i.source === "나라장터") return "입찰·용역";
+  return (i.field || "").trim() || "기타";
+}
+function buildGroups(items) {
+  const map = new Map();
+  const add = (label, order, i) => {
+    if (!map.has(label)) map.set(label, { label, order, items: [] });
+    map.get(label).items.push(i);
+  };
+  if (groupMode === "source") {
+    const meta = { "기업마당": [0, "🏛 정부지원사업 (기업마당)"],
+                   "K-Startup": [1, "🚀 창업지원 (K-Startup)"],
+                   "나라장터": [2, "📋 공공조달 입찰 (나라장터)"] };
+    items.forEach(i => add(meta[i.source][1], meta[i.source][0], i));
+  } else if (groupMode === "week") {
+    items.forEach(i => { const w = weekInfo(i.deadline); add(w.label, w.idx, i); });
+  } else {
+    items.forEach(i => add("📂 " + normField(i), 0, i));
+    map.forEach(g => g.order = -g.items.length); // 공고 많은 분야 먼저
+  }
+  return [...map.values()].sort((a, b) => a.order - b.order);
+}
+
+document.querySelectorAll(".chip[data-src]").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".chip[data-src]").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); srcFilter = b.dataset.src; render();
+});
+document.querySelectorAll(".gtab").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".gtab").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); groupMode = b.dataset.g; render();
+});
+document.getElementById("q").oninput = e => { query = e.target.value.trim().toLowerCase(); render(); };
+document.getElementById("hideDone").onchange = e => { hideDone = e.target.checked; render(); };
+document.getElementById("prev").onclick = () => { calM--; if (calM < 0) { calM = 11; calY--; } render(); };
+document.getElementById("next").onclick = () => { calM++; if (calM > 11) { calM = 0; calY++; } render(); };
+render();
+</script>
+</body>
+</html>
