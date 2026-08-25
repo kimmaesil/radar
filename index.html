@@ -142,6 +142,12 @@
       </div>
       <div class="day-list" id="dayList" style="display:none">
         <h3><span id="dayTitle"></span><button class="clear" id="dayClear">선택 해제 ✕</button></h3>
+        <div class="controls" style="margin:0 0 10px">
+          <button class="chip dtab on" data-g="none">전체</button>
+          <button class="chip dtab" data-g="region">지역별</button>
+          <button class="chip dtab" data-g="field">분야별</button>
+          <button class="chip dtab" data-g="industry">업종별</button>
+        </div>
         <div class="list" id="dayItems"></div>
       </div>
     </div>
@@ -176,7 +182,7 @@ const TODAY = iso(new Date(today.getTime() - today.getTimezoneOffset()*60000));
 
 let srcFilter = "전체", query = "", hideDone = true, groupMode = "source", regionFilter = "전체";
 let calY = today.getFullYear(), calM = today.getMonth();
-let selDate = null;
+let selDate = null, dayGroup = "none";
 
 function dday(deadline) {
   if (!deadline) return null;
@@ -248,18 +254,24 @@ function renderCalendar(items) {
 
   const dayList = document.getElementById("dayList");
   const hint = document.getElementById("calHint");
+  const dayHTML = evs => {
+    if (!evs.length) return `<div class="empty">해당 공고가 없습니다</div>`;
+    if (dayGroup === "none") return evs.map(itemHTML).join("");
+    return buildGroups(evs, dayGroup).map(g => `<details class="grp" open>
+        <summary>${g.label} <span class="count">${g.items.length}건</span></summary>
+        <div class="list">${g.items.map(itemHTML).join("")}</div>
+      </details>`).join("");
+  };
   if (selDate === "상시") {
     document.getElementById("dayTitle").textContent = `상시·마감미정 공고 (${always.length}건)`;
-    document.getElementById("dayItems").innerHTML =
-      always.length ? always.map(itemHTML).join("") : `<div class="empty">상시 공고가 없습니다</div>`;
+    document.getElementById("dayItems").innerHTML = dayHTML(always);
     dayList.style.display = "";
     hint.style.display = "none";
   } else if (selDate) {
     const evs = byDay[selDate] || [];
     const [y, m, d] = selDate.split("-");
     document.getElementById("dayTitle").textContent = `${+m}월 ${+d}일 마감 공고 (${evs.length}건)`;
-    document.getElementById("dayItems").innerHTML =
-      evs.length ? evs.map(itemHTML).join("") : `<div class="empty">이 날짜에 마감하는 공고가 없습니다</div>`;
+    document.getElementById("dayItems").innerHTML = dayHTML(evs);
     dayList.style.display = "";
     hint.style.display = "none";
   } else {
@@ -351,25 +363,26 @@ function industryOf(i) {
     if (kws.some(k => blob.includes(k))) return label;
   return "🧩 공통·기타";
 }
-function buildGroups(items) {
+function buildGroups(items, mode) {
+  mode = mode || groupMode;
   const map = new Map();
   const add = (label, order, i) => {
     if (!map.has(label)) map.set(label, { label, order, items: [] });
     map.get(label).items.push(i);
   };
-  if (groupMode === "source") {
+  if (mode === "source") {
     const meta = { "기업마당": [0, "🏛 정부지원사업 (기업마당)"],
                    "K-Startup": [1, "🚀 창업지원 (K-Startup)"],
                    "나라장터": [2, "📋 공공조달 입찰 (나라장터)"],
                    "예술경영지원센터": [3, "🎭 예술경영지원센터 공모"],
                    "소상공인시장진흥공단": [4, "🏪 소상공인시장진흥공단"] };
     items.forEach(i => { const m = meta[i.source] || [9, "📌 " + i.source]; add(m[1], m[0], i); });
-  } else if (groupMode === "week") {
+  } else if (mode === "week") {
     items.forEach(i => { const w = weekInfo(i.deadline); add(w.label, w.idx, i); });
-  } else if (groupMode === "region") {
+  } else if (mode === "region") {
     items.forEach(i => add("📍 " + regionOf(i), 0, i));
     map.forEach(g => g.order = g.label === "📍 전국" ? -1e9 : -g.items.length); // 전국 먼저
-  } else if (groupMode === "industry") {
+  } else if (mode === "industry") {
     items.forEach(i => add(industryOf(i), 0, i));
     map.forEach(g => g.order = g.label === "🧩 공통·기타" ? 1e9 : -g.items.length); // 기타 마지막
   } else {
@@ -386,6 +399,10 @@ document.querySelectorAll(".chip[data-src]").forEach(b => b.onclick = () => {
 document.querySelectorAll(".gtab").forEach(b => b.onclick = () => {
   document.querySelectorAll(".gtab").forEach(x => x.classList.remove("on"));
   b.classList.add("on"); groupMode = b.dataset.g; render();
+});
+document.querySelectorAll(".dtab").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".dtab").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); dayGroup = b.dataset.g; render();
 });
 document.getElementById("q").oninput = e => { query = e.target.value.trim().toLowerCase(); render(); };
 // 지역 드롭다운: 데이터에 있는 지역만, 공고 수와 함께 표시
