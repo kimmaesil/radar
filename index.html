@@ -62,6 +62,7 @@
   .cal-cell .cnt { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px;
     background: #e8eefb; color: var(--accent); font-weight: 700; font-size: 12px; }
   .cal-hint { color: var(--sub); font-size: 12px; margin-top: 8px; }
+  .flabel { font-size: 12px; color: var(--sub); font-weight: 700; margin-right: 2px; }
   .day-list { margin-top: 14px; }
   .day-list h3 { font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
   .day-list h3 .clear { border: 1px solid var(--line); background: #fff; border-radius: 999px;
@@ -142,12 +143,7 @@
       </div>
       <div class="day-list" id="dayList" style="display:none">
         <h3><span id="dayTitle"></span><button class="clear" id="dayClear">선택 해제 ✕</button></h3>
-        <div class="controls" style="margin:0 0 10px">
-          <button class="chip dtab on" data-g="none">전체</button>
-          <button class="chip dtab" data-g="region">지역별</button>
-          <button class="chip dtab" data-g="field">분야별</button>
-          <button class="chip dtab" data-g="industry">업종별</button>
-        </div>
+        <div id="dayFilters"></div>
         <div class="list" id="dayItems"></div>
       </div>
     </div>
@@ -182,7 +178,7 @@ const TODAY = iso(new Date(today.getTime() - today.getTimezoneOffset()*60000));
 
 let srcFilter = "전체", query = "", hideDone = true, groupMode = "source", regionFilter = "전체";
 let calY = today.getFullYear(), calM = today.getMonth();
-let selDate = null, dayGroup = "none";
+let selDate = null, dayRegion = "전체", dayField = "전체";
 
 function dday(deadline) {
   if (!deadline) return null;
@@ -241,6 +237,7 @@ function renderCalendar(items) {
   document.querySelectorAll(".cal-cell[data-date]").forEach(c => c.onclick = () => {
     const wasNew = selDate !== c.dataset.date;
     selDate = wasNew ? c.dataset.date : null;
+    dayRegion = dayField = "전체";
     render();
     if (wasNew) document.getElementById("dayList").scrollIntoView({ behavior: "smooth", block: "start" });
   });
@@ -249,29 +246,45 @@ function renderCalendar(items) {
   const btn = document.getElementById("alwaysBtn");
   btn.textContent = `🗓 상시·마감미정 ${always.length}건`;
   btn.classList.toggle("on", selDate === "상시");
-  btn.onclick = () => { selDate = selDate === "상시" ? null : "상시"; render();
+  btn.onclick = () => { selDate = selDate === "상시" ? null : "상시"; dayRegion = dayField = "전체"; render();
     if (selDate) document.getElementById("dayList").scrollIntoView({ behavior: "smooth", block: "start" }); };
 
   const dayList = document.getElementById("dayList");
   const hint = document.getElementById("calHint");
-  const dayHTML = evs => {
-    if (!evs.length) return `<div class="empty">해당 공고가 없습니다</div>`;
-    if (dayGroup === "none") return evs.map(itemHTML).join("");
-    return buildGroups(evs, dayGroup).map(g => `<details class="grp" open>
-        <summary>${g.label} <span class="count">${g.items.length}건</span></summary>
-        <div class="list">${g.items.map(itemHTML).join("")}</div>
-      </details>`).join("");
-  };
-  if (selDate === "상시") {
-    document.getElementById("dayTitle").textContent = `상시·마감미정 공고 (${always.length}건)`;
-    document.getElementById("dayItems").innerHTML = dayHTML(always);
-    dayList.style.display = "";
-    hint.style.display = "none";
-  } else if (selDate) {
-    const evs = byDay[selDate] || [];
-    const [y, m, d] = selDate.split("-");
-    document.getElementById("dayTitle").textContent = `${+m}월 ${+d}일 마감 공고 (${evs.length}건)`;
-    document.getElementById("dayItems").innerHTML = dayHTML(evs);
+  if (selDate) {
+    const base = selDate === "상시" ? always : (byDay[selDate] || []);
+    const title = selDate === "상시" ? "상시·마감미정 공고"
+      : `${+selDate.split("-")[1]}월 ${+selDate.split("-")[2]}일 마감 공고`;
+
+    // 반대쪽 필터를 적용한 상태에서 각 칩의 건수를 센다 (교차 필터)
+    const rc = {}, fc = {};
+    base.forEach(i => {
+      if (dayField === "전체" || normField(i) === dayField)
+        rc[regionOf(i)] = (rc[regionOf(i)] || 0) + 1;
+      if (dayRegion === "전체" || regionOf(i) === dayRegion)
+        fc[normField(i)] = (fc[normField(i)] || 0) + 1;
+    });
+    const esc = s => String(s).replace(/"/g, "&quot;");
+    const chip = (k, v, label, on) =>
+      `<button class="chip ${on ? "on" : ""}" data-k="${k}" data-v="${esc(v)}">${label}</button>`;
+    const rTotal = Object.values(rc).reduce((a, b) => a + b, 0);
+    const fTotal = Object.values(fc).reduce((a, b) => a + b, 0);
+    const regions = Object.keys(rc).sort((a, b) => a === "전국" ? -1 : b === "전국" ? 1 : rc[b] - rc[a]);
+    const fields = Object.keys(fc).sort((a, b) => fc[b] - fc[a]);
+    document.getElementById("dayFilters").innerHTML =
+      `<div class="controls" style="margin:0 0 6px"><span class="flabel">📍 지역</span>`
+      + chip("r", "전체", `전체 ${rTotal}`, dayRegion === "전체")
+      + regions.map(r => chip("r", r, `${r} ${rc[r]}`, dayRegion === r)).join("") + `</div>`
+      + `<div class="controls" style="margin:0 0 12px"><span class="flabel">📂 분야</span>`
+      + chip("f", "전체", `전체 ${fTotal}`, dayField === "전체")
+      + fields.map(f => chip("f", f, `${f} ${fc[f]}`, dayField === f)).join("") + `</div>`;
+
+    const evs = base.filter(i =>
+      (dayRegion === "전체" || regionOf(i) === dayRegion) &&
+      (dayField === "전체" || normField(i) === dayField));
+    document.getElementById("dayTitle").textContent = `${title} (${evs.length}건)`;
+    document.getElementById("dayItems").innerHTML =
+      evs.length ? evs.map(itemHTML).join("") : `<div class="empty">해당 공고가 없습니다</div>`;
     dayList.style.display = "";
     hint.style.display = "none";
   } else {
@@ -400,10 +413,13 @@ document.querySelectorAll(".gtab").forEach(b => b.onclick = () => {
   document.querySelectorAll(".gtab").forEach(x => x.classList.remove("on"));
   b.classList.add("on"); groupMode = b.dataset.g; render();
 });
-document.querySelectorAll(".dtab").forEach(b => b.onclick = () => {
-  document.querySelectorAll(".dtab").forEach(x => x.classList.remove("on"));
-  b.classList.add("on"); dayGroup = b.dataset.g; render();
-});
+document.getElementById("dayClear").onclick = () => { selDate = null; dayRegion = dayField = "전체"; render(); };
+document.getElementById("dayFilters").onclick = e => {
+  const b = e.target.closest("button[data-k]");
+  if (!b) return;
+  if (b.dataset.k === "r") dayRegion = b.dataset.v; else dayField = b.dataset.v;
+  render();
+};
 document.getElementById("q").oninput = e => { query = e.target.value.trim().toLowerCase(); render(); };
 // 지역 드롭다운: 데이터에 있는 지역만, 공고 수와 함께 표시
 (function initRegionSel() {
