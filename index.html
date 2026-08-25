@@ -198,9 +198,12 @@ function itemHTML(i) {
   const d = dday(i.deadline);
   const st = statuses[i.id] || "신규";
   const ddClass = d !== null && d <= 3 ? "hot" : d !== null && d <= 7 ? "soon" : "";
-  const ddText = d === null ? "상시" : d === 0 ? "D-DAY" : "D-" + d;
+  const note = i.deadline_note || "";
+  const ddText = d !== null ? (d === 0 ? "D-DAY" : "D-" + d)
+    : note.includes("예산") ? "예산소진" : note.includes("수시") ? "수시"
+    : note.includes("선착순") ? "선착순" : "상시";
   return `<div class="item ${st === "제외" ? "done" : ""}">
-    <div class="dday ${ddClass}">${ddText}<small>${i.deadline || ""}</small></div>
+    <div class="dday ${ddClass}">${ddText}<small>${i.deadline || note}</small></div>
     <div>
       <a class="t" href="${i.url}" target="_blank">${i.title}</a>
       <div class="s"><span class="badge ${srcClass(i.source)}">${i.source}</span>${i.org || ""} · ${i.field || ""}${i.target ? " · " + i.target : ""}</div>
