@@ -136,7 +136,10 @@
         <button id="prev">‹</button><b id="calTitle"></b><button id="next">›</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-hint" id="calHint">날짜를 클릭하면 그날 마감하는 공고만 아래에 표시됩니다.</div>
+      <div class="cal-hint" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span id="calHint">날짜를 클릭하면 그날 마감하는 공고만 아래에 표시됩니다.</span>
+        <button class="chip" id="alwaysBtn"></button>
+      </div>
       <div class="day-list" id="dayList" style="display:none">
         <h3><span id="dayTitle"></span><button class="clear" id="dayClear">선택 해제 ✕</button></h3>
         <div class="list" id="dayItems"></div>
@@ -236,9 +239,22 @@ function renderCalendar(items) {
     if (wasNew) document.getElementById("dayList").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
+  const always = items.filter(i => !i.deadline);
+  const btn = document.getElementById("alwaysBtn");
+  btn.textContent = `🗓 상시·마감미정 ${always.length}건`;
+  btn.classList.toggle("on", selDate === "상시");
+  btn.onclick = () => { selDate = selDate === "상시" ? null : "상시"; render();
+    if (selDate) document.getElementById("dayList").scrollIntoView({ behavior: "smooth", block: "start" }); };
+
   const dayList = document.getElementById("dayList");
   const hint = document.getElementById("calHint");
-  if (selDate) {
+  if (selDate === "상시") {
+    document.getElementById("dayTitle").textContent = `상시·마감미정 공고 (${always.length}건)`;
+    document.getElementById("dayItems").innerHTML =
+      always.length ? always.map(itemHTML).join("") : `<div class="empty">상시 공고가 없습니다</div>`;
+    dayList.style.display = "";
+    hint.style.display = "none";
+  } else if (selDate) {
     const evs = byDay[selDate] || [];
     const [y, m, d] = selDate.split("-");
     document.getElementById("dayTitle").textContent = `${+m}월 ${+d}일 마감 공고 (${evs.length}건)`;
