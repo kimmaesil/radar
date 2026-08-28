@@ -9,7 +9,7 @@
     --bg: #f6f7f9; --card: #fff; --line: #e5e8ec;
     --ink: #1c2330; --sub: #6b7686; --accent: #2f6fed;
     --biz: #2f6fed; --kst: #16a34a; --g2b: #ea850c;
-    --gok: #9333ea; --sms: #0d9488;
+    --gok: #9333ea; --sms: #0d9488; --bojo: #db2777;
     --danger: #dc2626; --warn: #d97706;
   }
   * { box-sizing: border-box; margin: 0; }
@@ -92,6 +92,7 @@
   .badge.기업마당 { background: var(--biz); } .badge.KStartup { background: var(--kst); }
   .badge.나라장터 { background: var(--g2b); }
   .badge.예술경영지원센터 { background: var(--gok); } .badge.소상공인시장진흥공단 { background: var(--sms); }
+  .badge.e나라도움 { background: var(--bojo); }
   .item select { border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 12px;
     background: #fff; cursor: pointer; }
   .item select.st-검토중 { border-color: var(--accent); color: var(--accent); }
@@ -135,6 +136,7 @@
     <button class="chip" data-src="나라장터">나라장터</button>
     <button class="chip" data-src="예술경영지원센터">예술경영</button>
     <button class="chip" data-src="소상공인시장진흥공단">소진공</button>
+    <button class="chip" data-src="e나라도움">e나라도움</button>
     <select id="regionSel" class="chip" title="지역 필터"></select>
     <label class="toggle"><input type="checkbox" id="hideDone" checked> 제외한 공고 숨기기</label>
   </div>
@@ -436,7 +438,8 @@ function buildGroups(items, mode) {
                    "K-Startup": [1, "🚀 창업지원 (K-Startup)"],
                    "나라장터": [2, "📋 공공조달 입찰 (나라장터)"],
                    "예술경영지원센터": [3, "🎭 예술경영지원센터 공모"],
-                   "소상공인시장진흥공단": [4, "🏪 소상공인시장진흥공단"] };
+                   "소상공인시장진흥공단": [4, "🏪 소상공인시장진흥공단"],
+                   "e나라도움": [5, "🏦 국고·지방보조 공모 (e나라도움·보탬e)"] };
     items.forEach(i => { const m = meta[i.source] || [9, "📌 " + i.source]; add(m[1], m[0], i); });
   } else if (mode === "week") {
     items.forEach(i => { const w = weekInfo(i.deadline); add(w.label, w.idx, i); });
