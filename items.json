@@ -23513,5 +23513,47 @@
   "region": "전국",
   "first_seen": "2026-09-29",
   "last_seen": "2026-09-29"
+ },
+ {
+  "id": "semas:56924",
+  "source": "소상공인시장진흥공단",
+  "title": "「2026년 해외 온라인 플랫폼 물류지원」 참여 소상공인 모집 공고(3차)",
+  "field": "사업공고",
+  "target": "",
+  "org": "소상공인시장진흥공단",
+  "start": "2026-09-29",
+  "deadline": null,
+  "url": "https://www.semas.or.kr/web/board/webBoardView.kmdc?pNm=BOA0101&bCd=1&b_idx=56924",
+  "region": "전국",
+  "first_seen": "2026-09-29",
+  "last_seen": "2026-09-29"
+ },
+ {
+  "id": "semas:56923",
+  "source": "소상공인시장진흥공단",
+  "title": "「2026년 해외 온라인 플랫폼 활용지원」 참여 소상공인 모집 공고(3차)",
+  "field": "사업공고",
+  "target": "",
+  "org": "소상공인시장진흥공단",
+  "start": "2026-09-29",
+  "deadline": null,
+  "url": "https://www.semas.or.kr/web/board/webBoardView.kmdc?pNm=BOA0101&bCd=1&b_idx=56923",
+  "region": "전국",
+  "first_seen": "2026-09-29",
+  "last_seen": "2026-09-29"
+ },
+ {
+  "id": "semas:56922",
+  "source": "소상공인시장진흥공단",
+  "title": "「2026년 해외 온라인 플랫폼 입점지원 」소상공인 모집공고 (2차)",
+  "field": "사업공고",
+  "target": "",
+  "org": "소상공인시장진흥공단",
+  "start": "2026-09-29",
+  "deadline": null,
+  "url": "https://www.semas.or.kr/web/board/webBoardView.kmdc?pNm=BOA0101&bCd=1&b_idx=56922",
+  "region": "전국",
+  "first_seen": "2026-09-29",
+  "last_seen": "2026-09-29"
  }
 ]
