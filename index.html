@@ -200,14 +200,14 @@
   </div>
 
   <section>
-    <h2>📅 마감 캘린더</h2>
+    <h2>📅 공고 캘린더 <span class="count">공고일(레이더 수집일) 기준</span></h2>
     <div class="cal">
       <div class="cal-head">
         <button id="prev">‹</button><b id="calTitle"></b><button id="next">›</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-hint" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span id="calHint">날짜를 클릭하면 그날 마감하는 공고만 아래에 표시됩니다.</span>
+        <span id="calHint">날짜를 클릭하면 그날 올라온 공고만 아래에 표시됩니다.</span>
         <button class="chip" id="alwaysBtn"></button>
       </div>
       <div class="day-list" id="dayList" style="display:none">
@@ -340,7 +340,8 @@ function renderCalendar(items) {
   const first = new Date(calY, calM, 1);
   const start = new Date(first); start.setDate(1 - first.getDay());
   const byDay = {};
-  items.forEach(i => { if (i.deadline) (byDay[i.deadline] = byDay[i.deadline] || []).push(i); });
+  // 공고일 기준: 접수시작일이 있으면 그 날, 없으면 레이더가 처음 발견한 날
+  items.forEach(i => { const d = i.start || i.first_seen; if (d) (byDay[d] = byDay[d] || []).push(i); });
   document.getElementById("calTitle").textContent = `${calY}년 ${calM + 1}월`;
   let html = ["일","월","화","수","목","금","토"].map(d => `<div class="dow">${d}</div>`).join("");
   for (let w = 0; w < 6; w++) for (let dd = 0; dd < 7; dd++) {
@@ -374,7 +375,7 @@ function renderCalendar(items) {
   if (selDate) {
     const base = selDate === "상시" ? always : (byDay[selDate] || []);
     const title = selDate === "상시" ? "상시·마감미정 공고"
-      : `${+selDate.split("-")[1]}월 ${+selDate.split("-")[2]}일 마감 공고`;
+      : `${+selDate.split("-")[1]}월 ${+selDate.split("-")[2]}일 올라온 공고`;
 
     // 반대쪽 필터를 적용한 상태에서 각 칩의 건수를 센다 (교차 필터)
     const rc = {}, fc = {};
