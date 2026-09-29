@@ -762,6 +762,14 @@ document.getElementById("q").oninput = e => { query = e.target.value.trim().toLo
     regions.map(r => `<option value="${r}">📍 ${r} (${counts[r]})</option>`).join("");
   sel.onchange = e => { regionFilter = e.target.value; subRegion = "전체"; resetPages(); render(); };
 })();
+// 새 탭이 차단되는 환경(임베드/미리보기)에서는 현재 탭에서 열기로 대체
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[target="_blank"]');
+  if (!a || !a.href) return;
+  e.preventDefault();
+  const w = window.open(a.href, "_blank", "noopener");
+  if (!w) location.href = a.href;
+});
 document.getElementById("hideDone").onchange = e => { hideDone = e.target.checked; resetPages(); render(); };
 document.getElementById("prev").onclick = () => { calM--; if (calM < 0) { calM = 11; calY--; } render(); };
 document.getElementById("next").onclick = () => { calM++; if (calM > 11) { calM = 0; calY++; } render(); };
