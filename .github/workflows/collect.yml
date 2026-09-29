@@ -20,6 +20,16 @@ jobs:
           DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
         run: python3 collect.py --days 2
 
+      - name: 수집 무결성 검사 (소스 오류 시 배포 중단)
+        run: |
+          python3 - << 'EOF'
+          import json, sys
+          errs = json.load(open("new_items.json"))["errors"]
+          if errs:
+              print("소스 오류로 배포 중단:", errs)
+              sys.exit(1)
+          EOF
+
       - name: 커밋 및 배포
         run: |
           git config user.name "radar-bot"
