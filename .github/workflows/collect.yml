@@ -1,8 +1,8 @@
 name: daily-collect
 
 on:
-  schedule:
-    - cron: '0 23 * * *'   # 매일 08:00 KST
+  # 해외 러너 IP가 data.go.kr·bojo.go.kr에서 차단되어 정기 실행은 비활성화.
+  # (차단이 풀리면 schedule: '0 23 * * *' 을 복원)
   workflow_dispatch:
 
 permissions:
