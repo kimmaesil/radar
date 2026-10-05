@@ -1,5 +1,42 @@
 {
-  "collected_at": "2026-10-05T08:00:26.628971",
+  "collected_at": "2026-10-06T08:00:34.422842",
   "errors": [],
-  "new_items": []
+  "new_items": [
+    {
+      "id": "g2b:R26BK01756160-000",
+      "source": "나라장터",
+      "title": "2026년 국제조세 위탁교육(미국)",
+      "field": "용역 입찰 (추정 47,272,727원)",
+      "target": "제한경쟁",
+      "org": "국세청",
+      "start": "2026-10-05",
+      "deadline": "2026-10-16",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01756160&bidPbancOrd=000",
+      "region": "전국"
+    },
+    {
+      "id": "g2b:R26BK01753143-000",
+      "source": "나라장터",
+      "title": "2026년 첨단제작 집중지원 영화 〈바위〉 후반작업 총괄 (포스트프로덕션 슈퍼바이징) 용역",
+      "field": "용역 입찰 (추정 50,000,000원)",
+      "target": "일반경쟁",
+      "org": "주식회사 영화적순간",
+      "start": "2026-10-05",
+      "deadline": "2026-10-16",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01753143&bidPbancOrd=000",
+      "region": "전국"
+    },
+    {
+      "id": "g2b:R26BK01754149-000",
+      "source": "나라장터",
+      "title": "경상남도 환경교육 효과 제고를 위한 도민 환경인식 조사 용역",
+      "field": "용역 입찰 (추정 27,272,727원)",
+      "target": "수의계약",
+      "org": "(재)경상남도환경재단",
+      "start": "2026-10-05",
+      "deadline": "2026-10-13",
+      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01754149&bidPbancOrd=000",
+      "region": "경남"
+    }
+  ]
 }
