@@ -14252,5 +14252,20 @@
   "first_seen": "2026-09-21",
   "last_seen": "2026-10-02",
   "archived_at": "2026-10-06"
+ },
+ {
+  "id": "semas:55873",
+  "source": "소상공인시장진흥공단",
+  "title": "'26년 소상공인시장진흥공단 8월 스케줄 달력",
+  "field": "사업공고",
+  "target": "",
+  "org": "소상공인시장진흥공단",
+  "start": "2026-08-03",
+  "deadline": null,
+  "url": "https://www.semas.or.kr/web/board/webBoardView.kmdc?pNm=BOA0101&bCd=1&b_idx=55873",
+  "region": "전국",
+  "first_seen": "2026-08-24",
+  "last_seen": "2026-09-29",
+  "archived_at": "2026-10-07"
  }
 ]
