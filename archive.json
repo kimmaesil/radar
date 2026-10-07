@@ -14254,6 +14254,21 @@
   "archived_at": "2026-10-06"
  },
  {
+  "id": "kstartup:179339",
+  "source": "K-Startup",
+  "title": "2026 「Go to Market」동남권 창업기업 온라인 판로개척 교육 참가자 모집",
+  "field": "멘토링ㆍ컨설팅ㆍ교육",
+  "target": "청소년,대학생,일반인,대학,연구기관,일반기업,1인 창조기업",
+  "org": "경상국립대학교 창업중심대학사업단",
+  "start": "2026-09-22",
+  "deadline": "2026-10-04",
+  "url": "https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=view&pbancSn=179339",
+  "region": "전국",
+  "first_seen": "2026-09-30",
+  "last_seen": "2026-10-04",
+  "archived_at": "2026-10-08"
+ },
+ {
   "id": "semas:55873",
   "source": "소상공인시장진흥공단",
   "title": "'26년 소상공인시장진흥공단 8월 스케줄 달력",
@@ -14267,5 +14282,52 @@
   "first_seen": "2026-08-24",
   "last_seen": "2026-09-29",
   "archived_at": "2026-10-07"
+ },
+ {
+  "id": "bizinfo:PBLN_000000000124903",
+  "source": "기업마당",
+  "title": "[경남] 창원시 2026년 창원지능형의료기기지원센터 활성화 지원사업 공고(AI 빅데이터 기반 의료바이오 첨단기기 연구제조센터 구축사업)",
+  "field": "기술",
+  "target": "중소기업",
+  "org": "산업통상부",
+  "start": null,
+  "deadline": null,
+  "deadline_note": "예산 소진 시까지",
+  "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000124903",
+  "region": "경남",
+  "first_seen": "2026-08-24",
+  "last_seen": "2026-09-30",
+  "archived_at": "2026-10-08"
+ },
+ {
+  "id": "bizinfo:PBLN_000000000123203",
+  "source": "기업마당",
+  "title": "AI기반 Age-Tech 산업 중심의 디지털의료제품 지원 바이오데이터 및 알고리즘 실증 기술서비스 모집 상시 공고(산업혁신기반구축ㆍ2차년도)",
+  "field": "기술",
+  "target": "중소기업",
+  "org": "산업통상부",
+  "start": null,
+  "deadline": null,
+  "deadline_note": "상시 접수",
+  "url": "https://www.bizinfo.go.kr/sii/siia/selectSIIA200Detail.do?pblancId=PBLN_000000000123203",
+  "region": "전국",
+  "first_seen": "2026-08-24",
+  "last_seen": "2026-09-30",
+  "archived_at": "2026-10-08"
+ },
+ {
+  "id": "semas:56702",
+  "source": "소상공인시장진흥공단",
+  "title": "「소상공인 재난지원금」환수 결정통지 반송에 따른 공시송달 공고",
+  "field": "사업공고",
+  "target": "",
+  "org": "소상공인시장진흥공단",
+  "start": "2026-09-16",
+  "deadline": null,
+  "url": "https://www.semas.or.kr/web/board/webBoardView.kmdc?pNm=BOA0101&bCd=1&b_idx=56702",
+  "region": "전국",
+  "first_seen": "2026-09-21",
+  "last_seen": "2026-09-30",
+  "archived_at": "2026-10-08"
  }
 ]
