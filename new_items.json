@@ -1,5 +1,18 @@
 {
-  "collected_at": "2026-10-18T08:00:25.660503",
+  "collected_at": "2026-10-19T08:00:27.294332",
   "errors": [],
-  "new_items": []
+  "new_items": [
+    {
+      "id": "iris:024437",
+      "source": "IRIS",
+      "title": "2026년도 한-중(CSTEC) 신진과학자교류사업(파견) 신규과제 공모",
+      "field": "R&D 자유공모",
+      "target": "",
+      "org": "과학기술정보통신부 · 한국연구재단",
+      "start": "2026-10-12",
+      "deadline": "2026-11-13",
+      "url": "https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=024437",
+      "region": "전국"
+    }
+  ]
 }
