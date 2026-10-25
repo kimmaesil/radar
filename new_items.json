@@ -1,17 +1,17 @@
 {
-  "collected_at": "2026-10-25T08:00:31.258698",
+  "collected_at": "2026-10-26T08:00:24.774072",
   "errors": [],
   "new_items": [
     {
-      "id": "g2b:R26BK01789575-000",
-      "source": "나라장터",
-      "title": "강진 로컬테마상권 통합브랜드 개발",
-      "field": "용역 입찰 (추정 81,818,182원)",
-      "target": "제한경쟁",
-      "org": "주식회사 로컬365",
-      "start": "2026-10-24",
-      "deadline": "2026-11-04",
-      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01789575&bidPbancOrd=000",
+      "id": "iris:024397",
+      "source": "IRIS",
+      "title": "2026년 지역거점 AX 혁신 기술개발 사업 신규지원 대상과제 공고(표준모델 AX R&D)",
+      "field": "R&D 지정공모",
+      "target": "",
+      "org": "다부처 · 정보통신산업진흥원",
+      "start": "2026-10-26",
+      "deadline": "2026-11-09",
+      "url": "https://www.iris.go.kr/contents/retrieveBsnsAncmView.do?ancmId=024397",
       "region": "전국"
     }
   ]
