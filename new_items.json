@@ -1,30 +1,5 @@
 {
-  "collected_at": "2026-11-08T08:00:34.614495",
+  "collected_at": "2026-11-09T08:00:27.688850",
   "errors": [],
-  "new_items": [
-    {
-      "id": "g2b:R26BK01816030-000",
-      "source": "나라장터",
-      "title": "예술의전당 한가람미술관 재개관전 전시연출 설계 및 제작 설치 용역",
-      "field": "용역 입찰 (추정 181,818,182원)",
-      "target": "제한경쟁",
-      "org": "예술의전당",
-      "start": "2026-11-07",
-      "deadline": "2026-11-18",
-      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01816030&bidPbancOrd=000",
-      "region": "전국"
-    },
-    {
-      "id": "g2b:R26BK01816030-001",
-      "source": "나라장터",
-      "title": "예술의전당 한가람미술관 재개관전 전시연출 설계 및 제작 설치 용역",
-      "field": "용역 입찰 (추정 181,818,182원)",
-      "target": "제한경쟁",
-      "org": "예술의전당",
-      "start": "2026-11-07",
-      "deadline": "2026-11-18",
-      "url": "https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo=R26BK01816030&bidPbancOrd=001",
-      "region": "전국"
-    }
-  ]
+  "new_items": []
 }
